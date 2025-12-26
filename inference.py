@@ -45,28 +45,51 @@ def predict(text, model, tokenizer, device="cpu"):
 
 
 def main():
+    import json
+
     device = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
     print(f"使用设备: {device}")
 
     model, tokenizer = load_model()
     model = model.to(device)
 
-    test_sentences = [
-        "This movie is absolutely wonderful and amazing!",
-        "Terrible film, waste of time and money.",
-        "It was okay, nothing special.",
-        "I love this product, it works great!",
-        "Very disappointing experience, would not recommend.",
-    ]
+    # 从测试集读取数据
+    test_data = []
+    with open("data/test_data.jsonl", "r") as f:
+        for line in f:
+            test_data.append(json.loads(line))
 
-    print("\n情感分析结果:")
+    # 计算准确率
+    correct = 0
+    total = len(test_data)
+
+    print(f"\n测试集大小: {total}")
     print("-" * 60)
-    for sentence in test_sentences:
-        result = predict(sentence, model, tokenizer, device)
-        emoji = "✓" if result["sentiment"] == "积极" else "✗"
-        print(f"\n文本: {sentence}")
-        print(f"预测: {result['sentiment']} {emoji}")
-        print(f"置信度: {result['confidence']:.2%}")
+
+    # 显示前 10 个样本的详细结果
+    for item in test_data[:10]:
+        text = item["text"]
+        label = item["label"]
+        label_name = "积极" if label == 1 else "消极"
+
+        result = predict(text, model, tokenizer, device)
+        is_correct = result["sentiment"] == label_name
+        emoji = "✓" if is_correct else "✗"
+
+        print(f"\n文本: {text[:50]}{'...' if len(text) > 50 else ''}")
+        print(f"真实: {label_name} | 预测: {result['sentiment']} {emoji} ({result['confidence']:.1%})")
+
+    # 计算整体准确率
+    print("\n" + "-" * 60)
+    print("计算整体准确率...")
+
+    for item in test_data:
+        result = predict(item["text"], model, tokenizer, device)
+        label_name = "积极" if item["label"] == 1 else "消极"
+        if result["sentiment"] == label_name:
+            correct += 1
+
+    print(f"\n准确率: {correct}/{total} = {correct/total:.2%}")
 
 
 def interactive():

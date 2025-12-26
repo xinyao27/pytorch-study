@@ -1,6 +1,16 @@
-"""简易分词器"""
+"""简易分词器 - 支持中文字符级分词"""
 
+import re
 from collections import Counter
+
+
+def tokenize_chinese(text):
+    """中文字符级分词，保留英文单词和数字"""
+    tokens = []
+    # 匹配: 中文字符 | 英文单词 | 数字 | 微博表情[xxx]
+    pattern = r'\[[\u4e00-\u9fff\w]+\]|[\u4e00-\u9fff]|[a-zA-Z]+|[0-9]+'
+    tokens = re.findall(pattern, text)
+    return tokens
 
 
 class SimpleTokenizer:
@@ -13,8 +23,8 @@ class SimpleTokenizer:
         """从文本构建词表"""
         word_counts = Counter()
         for text in texts:
-            words = text.lower().split()
-            word_counts.update(words)
+            tokens = tokenize_chinese(text)
+            word_counts.update(tokens)
 
         most_common = word_counts.most_common(self.vocab_size - len(self.word2idx))
         for word, _ in most_common:
@@ -26,15 +36,15 @@ class SimpleTokenizer:
 
     def encode(self, text, max_length=128):
         """将文本编码为 token ids"""
-        words = text.lower().split()
-        tokens = [self.word2idx.get("<CLS>")]
-        for word in words[:max_length - 1]:
-            tokens.append(self.word2idx.get(word, self.word2idx["<UNK>"]))
+        tokens = tokenize_chinese(text)
+        ids = [self.word2idx.get("<CLS>")]
+        for token in tokens[:max_length - 1]:
+            ids.append(self.word2idx.get(token, self.word2idx["<UNK>"]))
 
-        if len(tokens) < max_length:
-            tokens += [self.word2idx["<PAD>"]] * (max_length - len(tokens))
+        if len(ids) < max_length:
+            ids += [self.word2idx["<PAD>"]] * (max_length - len(ids))
 
-        return tokens[:max_length]
+        return ids[:max_length]
 
     def decode(self, tokens):
         """将 token ids 解码为文本"""

@@ -13,7 +13,7 @@ def export_jsonl():
             f.write(json.dumps({
                 "text": text,
                 "label": label,
-                "sentiment": "positive" if label == 1 else "negative"
+                "sentiment": "积极" if label == 1 else "消极"
             }, ensure_ascii=False) + "\n")
 
     # 导出测试集
@@ -22,7 +22,7 @@ def export_jsonl():
             f.write(json.dumps({
                 "text": text,
                 "label": label,
-                "sentiment": "positive" if label == 1 else "negative"
+                "sentiment": "积极" if label == 1 else "消极"
             }, ensure_ascii=False) + "\n")
 
     print(f"训练集已导出: train_data.jsonl ({len(data['train_texts'])} 条)")

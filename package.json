@@ -1,0 +1,24 @@
+{
+  "name": "pytorch-study",
+  "version": "1.0.0",
+  "description": "基于 PyTorch 的情感分类 Transformer 模型，判断一句话是积极还是消极。",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "cli.mjs",
+  "bin": {
+    "sentiment": "./cli.mjs"
+  },
+  "scripts": {
+    "cli": "bun run cli.mjs",
+    "server": "bun run server.mjs",
+    "train": "uv run python dataset.py && uv run python train.py && uv run python inference.py"
+  },
+  "dependencies": {
+    "@clack/prompts": "^0.11.0",
+    "bun-types": "^1.3.5",
+    "picocolors": "^1.1.1",
+    "typescript": "^5.9.3",
+    "undici-types": "^7.16.0"
+  }
+}

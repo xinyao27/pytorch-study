@@ -27,13 +27,17 @@ class SentimentDataset(Dataset):
 
 
 def prepare_data():
-    """准备 IMDB 数据集"""
-    print("加载 IMDB 数据集...")
-    dataset = load_dataset("imdb")
+    """准备数据集"""
+    print("加载数据集...")
+    dataset = load_dataset("t1annnnn/Chinese_sentimentAnalyze")
 
-    # 打乱数据确保标签分布均匀
-    train_data = dataset["train"].shuffle(seed=42).select(range(config.TRAIN_SIZE))
-    test_data = dataset["test"].shuffle(seed=42).select(range(config.TEST_SIZE))
+    # 使用预分割的数据集
+    train_data = dataset["train"].shuffle(seed=42)
+    test_data = dataset["test"].shuffle(seed=42)
+
+    # 限制数据量
+    train_data = train_data.select(range(min(config.TRAIN_SIZE, len(train_data))))
+    test_data = test_data.select(range(min(config.TEST_SIZE, len(test_data))))
 
     train_texts = train_data["text"]
     train_labels = train_data["label"]
@@ -60,9 +64,27 @@ def prepare_data():
         "test_labels": test_labels,
     }, "data/data.pt")
 
+    # 导出 JSONL
+    import json
+    with open("data/train_data.jsonl", "w", encoding="utf-8") as f:
+        for text, label in zip(train_texts, train_labels):
+            f.write(json.dumps({
+                "text": text,
+                "label": label,
+                "sentiment": "积极" if label == 1 else "消极"
+            }, ensure_ascii=False) + "\n")
+
+    with open("data/test_data.jsonl", "w", encoding="utf-8") as f:
+        for text, label in zip(test_texts, test_labels):
+            f.write(json.dumps({
+                "text": text,
+                "label": label,
+                "sentiment": "积极" if label == 1 else "消极"
+            }, ensure_ascii=False) + "\n")
+
     print(f"训练集大小: {len(train_dataset)}")
     print(f"测试集大小: {len(test_dataset)}")
-    print("数据已保存到 data.pt 和 vocab.json")
+    print("数据已保存到 data/data.pt, vocab.json, train_data.jsonl, test_data.jsonl")
 
     return train_dataset, test_dataset, tokenizer
 
