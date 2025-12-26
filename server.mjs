@@ -136,8 +136,10 @@ const html = `<!DOCTYPE html>
     }
     .positive .dot { background: #22c55e; }
     .negative .dot { background: #ef4444; }
+    .uncertain .dot { background: #f59e0b; }
     .positive .label { color: #22c55e; }
     .negative .label { color: #ef4444; }
+    .uncertain .label { color: #f59e0b; }
     .confidence {
       margin-top: 0.5rem;
       color: #94a3b8;
@@ -216,7 +218,8 @@ const html = `<!DOCTYPE html>
         }
 
         const isPositive = data.sentiment === '积极';
-        sentiment.className = 'sentiment ' + (isPositive ? 'positive' : 'negative');
+        const isUncertain = data.sentiment === '不确定';
+        sentiment.className = 'sentiment ' + (isUncertain ? 'uncertain' : isPositive ? 'positive' : 'negative');
         sentiment.querySelector('.label').textContent = data.sentiment;
         confidence.textContent = '置信度: ' + (data.confidence * 100).toFixed(1) + '%';
         barNeg.style.width = (data.scores.negative * 100) + '%';

@@ -29,7 +29,24 @@ def load_model(model_path="models/sentiment_model.pt", vocab_path="data/vocab.js
 
 def predict(text, model, tokenizer, device="cpu"):
     """预测单条文本"""
-    tokens = torch.tensor([tokenizer.encode(text, config.MAX_LENGTH)]).to(device)
+    encoded = tokenizer.encode(text, config.MAX_LENGTH)
+    tokens = torch.tensor([encoded]).to(device)
+
+    # 检查 <UNK> 比例，排除 <PAD> 和 <CLS>
+    unk_id = tokenizer.word2idx["<UNK>"]
+    pad_id = tokenizer.word2idx["<PAD>"]
+    cls_id = tokenizer.word2idx["<CLS>"]
+    valid_tokens = [t for t in encoded if t not in (pad_id, cls_id)]
+    unk_ratio = sum(1 for t in valid_tokens if t == unk_id) / len(valid_tokens) if valid_tokens else 1
+
+    # 如果大部分是未知词，返回不确定
+    if unk_ratio > 0.5:
+        return {
+            "text": text,
+            "sentiment": "不确定",
+            "confidence": 0.5,
+            "scores": {"消极": 0.5, "积极": 0.5}
+        }
 
     with torch.no_grad():
         logits = model(tokens)
