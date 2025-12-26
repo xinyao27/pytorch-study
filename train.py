@@ -179,8 +179,8 @@ def main():
 
     # 6. 保存训练好的模型
     # 只保存模型参数（state_dict），而不是整个模型对象
-    torch.save(model.state_dict(), "models/sentiment_model.pt")
-    print("\n模型已保存到 models/sentiment_model.pt")
+    torch.save(model.state_dict(), f"models/sentiment_model_{config.DATA_SIZE_NAME}.pt")
+    print(f"\n模型已保存到 models/sentiment_model_{config.DATA_SIZE_NAME}.pt")
 
 
 # 程序入口点

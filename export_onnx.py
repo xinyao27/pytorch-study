@@ -6,10 +6,15 @@ from tokenizer import SimpleTokenizer
 import config
 
 
-def export_onnx(model_path="models/sentiment_model.pt", output_path="models/sentiment_model.onnx"):
+def export_onnx(model_path=None, output_path=None):
+    if model_path is None:
+        model_path = f"models/sentiment_model_{config.DATA_SIZE_NAME}.pt"
+    if output_path is None:
+        output_path = f"models/sentiment_model_{config.DATA_SIZE_NAME}.onnx"
+
     # 加载分词器获取词表大小
     tokenizer = SimpleTokenizer(vocab_size=config.VOCAB_SIZE)
-    tokenizer.load("data/vocab.json")
+    tokenizer.load(f"data/vocab_{config.DATA_SIZE_NAME}.json")
 
     # 创建模型
     model = SentimentLLM(

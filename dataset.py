@@ -50,7 +50,7 @@ def prepare_data():
     print("构建词表...")
     tokenizer = SimpleTokenizer(vocab_size=config.VOCAB_SIZE)
     tokenizer.build_vocab(train_texts)
-    tokenizer.save("data/vocab.json")
+    tokenizer.save(f"data/vocab_{config.DATA_SIZE_NAME}.json")
 
     # 创建数据集
     train_dataset = SentimentDataset(train_texts, train_labels, tokenizer, config.MAX_LENGTH)
@@ -62,11 +62,11 @@ def prepare_data():
         "train_labels": train_labels,
         "test_texts": test_texts,
         "test_labels": test_labels,
-    }, "data/data.pt")
+    }, f"data/data_{config.DATA_SIZE_NAME}.pt")
 
     # 导出 JSONL
     import json
-    with open("data/train_data.jsonl", "w", encoding="utf-8") as f:
+    with open(f"data/train_data_{config.DATA_SIZE_NAME}.jsonl", "w", encoding="utf-8") as f:
         for text, label in zip(train_texts, train_labels):
             f.write(json.dumps({
                 "text": text,
@@ -74,7 +74,7 @@ def prepare_data():
                 "sentiment": "积极" if label == 1 else "消极"
             }, ensure_ascii=False) + "\n")
 
-    with open("data/test_data.jsonl", "w", encoding="utf-8") as f:
+    with open(f"data/test_data_{config.DATA_SIZE_NAME}.jsonl", "w", encoding="utf-8") as f:
         for text, label in zip(test_texts, test_labels):
             f.write(json.dumps({
                 "text": text,
@@ -84,16 +84,16 @@ def prepare_data():
 
     print(f"训练集大小: {len(train_dataset)}")
     print(f"测试集大小: {len(test_dataset)}")
-    print("数据已保存到 data/data.pt, vocab.json, train_data.jsonl, test_data.jsonl")
+    print(f"数据已保存到 data/data_{config.DATA_SIZE_NAME}.pt, vocab_{config.DATA_SIZE_NAME}.json, train_data_{config.DATA_SIZE_NAME}.jsonl, test_data_{config.DATA_SIZE_NAME}.jsonl")
 
     return train_dataset, test_dataset, tokenizer
 
 
 def load_data():
     """加载已处理的数据"""
-    data = torch.load("data/data.pt", weights_only=False)
+    data = torch.load(f"data/data_{config.DATA_SIZE_NAME}.pt", weights_only=False)
     tokenizer = SimpleTokenizer(vocab_size=config.VOCAB_SIZE)
-    tokenizer.load("data/vocab.json")
+    tokenizer.load(f"data/vocab_{config.DATA_SIZE_NAME}.json")
 
     train_dataset = SentimentDataset(
         data["train_texts"], data["train_labels"], tokenizer, config.MAX_LENGTH

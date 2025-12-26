@@ -6,8 +6,12 @@ from tokenizer import SimpleTokenizer
 import config
 
 
-def load_model(model_path="models/sentiment_model.pt", vocab_path="data/vocab.json"):
+def load_model(model_path=None, vocab_path=None):
     """加载模型和分词器"""
+    if model_path is None:
+        model_path = f"models/sentiment_model_{config.DATA_SIZE_NAME}.pt"
+    if vocab_path is None:
+        vocab_path = f"data/vocab_{config.DATA_SIZE_NAME}.json"
     tokenizer = SimpleTokenizer(vocab_size=config.VOCAB_SIZE)
     tokenizer.load(vocab_path)
 
@@ -72,7 +76,7 @@ def main():
 
     # 从测试集读取数据
     test_data = []
-    with open("data/test_data.jsonl", "r") as f:
+    with open(f"data/test_data_{config.DATA_SIZE_NAME}.jsonl", "r") as f:
         for line in f:
             test_data.append(json.loads(line))
 
