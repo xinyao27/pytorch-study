@@ -1,0 +1,34 @@
+{
+  "sentiment_model_small": {
+    "metrics": {
+      "accuracy": 0.705,
+      "precision": 0.7456521739130435,
+      "recall": 0.6583493282149712,
+      "f1": 0.6992864424057085,
+      "auc_roc": 0.7899099010654796,
+      "auc_pr": 0.8030667319623361
+    },
+    "model_info": {
+      "num_params": 3110274,
+      "file_size_mb": 12.008614540100098
+    },
+    "speed": 654.8976107191206,
+    "confidence_analysis": [
+      {
+        "range": "高 (>0.9)",
+        "count": 824,
+        "accuracy": 0.845873786407767
+      },
+      {
+        "range": "中 (0.7-0.9)",
+        "count": 648,
+        "accuracy": 0.6666666666666666
+      },
+      {
+        "range": "低 (<0.7)",
+        "count": 528,
+        "accuracy": 0.5321969696969697
+      }
+    ]
+  }
+}
